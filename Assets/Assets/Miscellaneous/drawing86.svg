@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="7.6269727mm"
+   height="5.9433684mm"
+   viewBox="0 0 7.6269731 5.9433678"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (unknown)"
+   sodipodi:docname="drawing86.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="-214.74876"
+     inkscape:cy="95.305471"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="927"
+     inkscape:window-height="1025"
+     inkscape:window-x="67"
+     inkscape:window-y="27"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-338.77246,-232.02135)">
+    <g
+       transform="matrix(0.26458333,0,0,0.26458333,163.53864,159.32101)"
+       id="g2052">
+      <g
+         transform="matrix(0.26458333,0,0,0.26458333,328.68793,231.03731)"
+         id="use2050">
+        <path
+           style="fill:#8c6d48;stroke:none"
+           inkscape:connector-curvature="0"
+           d="m 1294.7,213.9 h -8.75 v 14.3 l 8.05,0.55 0.7,-14.85 m 1.1,-24.4 -9.85,0.6 v 15.6 l 9.15,-0.65 0.7,-15.55 m 71.3,24.4 h -10.05 l 2.3,19.25 h 10.5 l -2.75,-19.25 m -4.65,-28.6 -8.7,0.55 1.75,14.85 8.4,-0.6 z"
+           id="path2202" />
+        <path
+           style="fill:#9c7b53;stroke:none"
+           inkscape:connector-curvature="0"
+           d="m 1272.1,165.3 -11.2,19.25 10.1,65.65 h 14.95 v -22 -14.3 -8.2 -15.6 -10.4 l -13.85,-14.4 m 83.4,35.4 -1.75,-14.85 -57.95,3.65 -0.7,15.55 60.4,-4.35 m 3.85,32.45 -2.3,-19.25 h -62.35 l -0.7,14.85 z"
+           id="path2204" />
+      </g>
+    </g>
+  </g>
+</svg>
