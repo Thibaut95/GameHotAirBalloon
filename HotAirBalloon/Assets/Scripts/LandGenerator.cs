@@ -8,9 +8,6 @@ public class LandGenerator : MonoBehaviour
     private Biome[] biomes;
 
     [SerializeField]
-    private int positionNextTile;
-
-    [SerializeField]
     private int sizeTile;
 
     [SerializeField]
@@ -26,12 +23,13 @@ public class LandGenerator : MonoBehaviour
     private GameObject cloudDecor;
 
     [SerializeField]
-
     private GameObject cloud;
 
-    private GameObject lastTile;
-    private int biome;
+    [SerializeField]
+    private Vector3 positionNextTile;
 
+    
+    private int biome;
     private System.Random random;
     // Start is called before the first frame update
     void Start()
@@ -39,7 +37,7 @@ public class LandGenerator : MonoBehaviour
         random = new System.Random();
         biome = Random.Range(0, biomes.Length);
 
-        while (positionNextTile < widthCamera)
+        while (positionNextTile.x < widthCamera/2)
         {
             NewTile();
         }
@@ -48,7 +46,7 @@ public class LandGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (this.gameObject.transform.position.x + widthCamera > lastTile.transform.position.x)
+        if (this.gameObject.transform.position.x + widthCamera/2 > positionNextTile.x)
         {
             NewTile();
         }
@@ -56,22 +54,22 @@ public class LandGenerator : MonoBehaviour
 
     public void NewTile()
     {
-        lastTile = Instantiate(biomes[biome].ground) as GameObject;
+        GameObject lastTile = Instantiate(biomes[biome].ground) as GameObject;
         lastTile.transform.parent = frontDecor.transform;
-        lastTile.transform.position += new Vector3(positionNextTile, 0, 0);
+        lastTile.transform.position = positionNextTile;
         
         GameObject tileBack = Instantiate(biomes[biome].getGroundBack()) as GameObject;
         tileBack.transform.parent = backDecor.transform;
-        tileBack.transform.position += new Vector3(positionNextTile, 0, 0);
+        tileBack.transform.position = positionNextTile;
         tileBack.layer = backDecor.layer;
 
         GameObject tileCloud = Instantiate(cloud) as GameObject;
         tileCloud.transform.parent = cloudDecor.transform;
-        tileCloud.transform.position += new Vector3(positionNextTile, 0, 0);
+        tileCloud.transform.position = positionNextTile;
         tileCloud.layer = cloudDecor.layer;
         tileCloud.transform.GetChild(0).gameObject.layer = cloudDecor.layer;
 
-        positionNextTile += sizeTile;
+        positionNextTile.x += sizeTile;
 
         double number = random.NextDouble();
 
@@ -99,6 +97,7 @@ public class LandGenerator : MonoBehaviour
             GameObject tree = Instantiate(biomes[biome].getTrees()[treeNumber]) as GameObject;
             tree.transform.parent=frontDecor.transform;
             tree.transform.position = lastTile.transform.Find("Positions").transform.GetChild(index).transform.position + new Vector3(0, 0, -1);
+            tree.transform.parent = lastTile.transform;
         }
     }
 }
