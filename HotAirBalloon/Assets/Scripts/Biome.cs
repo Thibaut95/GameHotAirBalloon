@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MathNet.Numerics;
 
 [System.Serializable]
 public class Biome

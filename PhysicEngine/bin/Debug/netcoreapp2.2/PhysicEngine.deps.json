@@ -1,0 +1,57 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "2663a5a22efd7042b4385dacb189261beb2a9244"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "PhysicEngine/1.0.0": {
+        "dependencies": {
+          "MathNet.Numerics": "4.7.0",
+          "OxyPlot.Core": "2014.1.546"
+        },
+        "runtime": {
+          "PhysicEngine.dll": {}
+        }
+      },
+      "MathNet.Numerics/4.7.0": {
+        "runtime": {
+          "lib/netstandard2.0/MathNet.Numerics.dll": {
+            "assemblyVersion": "4.7.0.0",
+            "fileVersion": "4.7.0.0"
+          }
+        }
+      },
+      "OxyPlot.Core/2014.1.546": {
+        "runtime": {
+          "lib/portable-net4+sl4+wp71+win8/OxyPlot.dll": {
+            "assemblyVersion": "2014.1.546.0",
+            "fileVersion": "2014.1.546.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PhysicEngine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MathNet.Numerics/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Nmlzha0Tv/GnBELzUzjdlWrMpSmrAejD8D68A8sPuRpKIZ9Qn+nG5hAQByrich/uRL258P/4YVJ6gYWlsbUAWA==",
+      "path": "mathnet.numerics/4.7.0",
+      "hashPath": "mathnet.numerics.4.7.0.nupkg.sha512"
+    },
+    "OxyPlot.Core/2014.1.546": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Vv7C4yjW4V3fjH4tjR295noyZXHrAdpFN/WXZM8COAIwYjmoXbG3sX1DBAcQgT72yf4mKcVoo66bUz7uUp9sCw==",
+      "path": "oxyplot.core/2014.1.546",
+      "hashPath": "oxyplot.core.2014.1.546.nupkg.sha512"
+    }
+  }
+}
