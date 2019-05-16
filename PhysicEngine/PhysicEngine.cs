@@ -35,11 +35,11 @@ namespace PhysicEngine
 
 
 
-        private const double duration = 145;
-        private const double stepNumber = 145;
+        private const double duration = 150;
+        private const double stepNumber = 150;
 
-        private const double h0 = 1300;
-        private const double burnerTime = 0;
+        private const double h0 = 680;
+        private const double burnerTime = 15;
 
         public void run()
         {
@@ -136,6 +136,7 @@ namespace PhysicEngine
             double Qa = -V * rhoo * g / (gamma - 1) * v;
             double Qb = 0;
             if (t <= burnerTime) Qb = alphab;
+            Console.WriteLine(t);
 
             double Qc = alphac * (Math.Pow(Ti, 4) - Math.Pow(To, 4));
             double Qm = Qb - Qa - Qc;

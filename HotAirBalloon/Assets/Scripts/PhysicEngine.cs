@@ -34,6 +34,7 @@ public class PhysicEngine
 
     private const int stepNumber = 2;
 
+    private double h0;
     private double h;
     private double v;
     private double Ti;
@@ -60,6 +61,7 @@ public class PhysicEngine
 
     public PhysicEngine(double h0, double v0, double Ti0)
     {
+        this.h0 = h0;
         this.v = v0;
         this.h = h0;
         this.Ti = Ti0;
@@ -78,9 +80,9 @@ public class PhysicEngine
         v = result[result.Length - 1][1];
         Ti = result[result.Length - 1][2] - Koffset;
 
-        if(h<=0)
+        if(h<=h0)
         {
-            h=0;
+            h=h0;
             v=0;
         }
     }

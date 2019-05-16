@@ -5,13 +5,18 @@ using UnityEngine;
 public class LandGenerator : MonoBehaviour
 {
     [SerializeField]
+    private float offsetGround;
+    [SerializeField]
+    private GameObject mainCamera;
+
+    [SerializeField]
     private Biome[] biomes;
 
     [SerializeField]
     private int sizeTile;
 
     [SerializeField]
-    private int widthCamera;
+    private int width;
 
     [SerializeField]
     private GameObject frontDecor;
@@ -25,19 +30,19 @@ public class LandGenerator : MonoBehaviour
     [SerializeField]
     private GameObject cloud;
 
-    [SerializeField]
     private Vector3 positionNextTile;
 
-    
+
     private int biome;
     private System.Random random;
     // Start is called before the first frame update
     void Start()
     {
+        positionNextTile=new Vector3(mainCamera.transform.position.x - width / 2,mainCamera.transform.position.y+offsetGround,0);
         random = new System.Random();
         biome = Random.Range(0, biomes.Length);
 
-        while (positionNextTile.x < widthCamera/2)
+        while (positionNextTile.x < mainCamera.transform.position.x + width / 2)
         {
             NewTile();
         }
@@ -46,7 +51,7 @@ public class LandGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (this.gameObject.transform.position.x + widthCamera/2 > positionNextTile.x)
+        if (mainCamera.gameObject.transform.position.x + width / 2 > positionNextTile.x)
         {
             NewTile();
         }
@@ -57,7 +62,7 @@ public class LandGenerator : MonoBehaviour
         GameObject lastTile = Instantiate(biomes[biome].ground) as GameObject;
         lastTile.transform.parent = frontDecor.transform;
         lastTile.transform.position = positionNextTile;
-        
+
         GameObject tileBack = Instantiate(biomes[biome].getGroundBack()) as GameObject;
         tileBack.transform.parent = backDecor.transform;
         tileBack.transform.position = positionNextTile;
@@ -95,7 +100,7 @@ public class LandGenerator : MonoBehaviour
         {
             int treeNumber = random.Next(0, biomes[biome].getTrees().Length);
             GameObject tree = Instantiate(biomes[biome].getTrees()[treeNumber]) as GameObject;
-            tree.transform.parent=frontDecor.transform;
+            tree.transform.parent = frontDecor.transform;
             tree.transform.position = lastTile.transform.Find("Positions").transform.GetChild(index).transform.position + new Vector3(0, 0, -1);
             tree.transform.parent = lastTile.transform;
         }

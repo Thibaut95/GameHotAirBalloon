@@ -1,6 +1,3 @@
-
-
-
 public class Wind
 {
     public float strength { get; set; }

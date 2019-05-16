@@ -6,6 +6,9 @@ using System;
 public class SkyGenerator : MonoBehaviour
 {
     [SerializeField]
+    private GameObject mainCamera;
+
+    [SerializeField]
     private int width;
 
     [SerializeField]
@@ -16,9 +19,6 @@ public class SkyGenerator : MonoBehaviour
 
     [SerializeField]
     private GameObject skyPrefab;
-
-    [SerializeField]
-    private GameObject skyGameObject;
 
     [SerializeField]
     private GameObject[] cloudPrefabs;
@@ -32,41 +32,43 @@ public class SkyGenerator : MonoBehaviour
     void Start()
     {
         random = new System.Random();
-        for (int x = -width / 2; x < width / 2; x += sizeTile)
+        Vector3 posCamera = mainCamera.transform.position;
+
+        heightMax = (int)(posCamera.y+(height / 2));
+        heightMin = (int)(posCamera.y-(height / 2));
+        widthMax = (int)(posCamera.x+(width / 2));
+
+        for (int x = (int)(posCamera.x-(width / 2)); x < widthMax; x += sizeTile)
         {
-            for (int y = -height / 2; y < height / 2; y += sizeTile)
+            for (int y = heightMin; y < heightMax; y += sizeTile)
             {
                 NewTile(x, y);
             }
         }
-
-        heightMax = height / 2;
-        heightMin = -heightMax;
-        widthMax = width / 2;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (this.transform.position.y + height / 2 > heightMax)
+        if (mainCamera.transform.position.y + height / 2 > heightMax)
         {
             for (int x = widthMax - width; x < widthMax; x += sizeTile)
             {
                 NewTile(x, heightMax);
             }
             heightMax += sizeTile;
-            if (this.transform.position.y - height / 2 - sizeTile * 2 > heightMin) heightMin += sizeTile;
+            if (mainCamera.transform.position.y - height / 2 - sizeTile * 2 > heightMin) heightMin += sizeTile;
         }
-        if (this.transform.position.y - height / 2 < heightMin)
+        if (mainCamera.transform.position.y - height / 2 < heightMin)
         {
             for (int x = widthMax - width; x < widthMax; x += sizeTile)
             {
                 NewTile(x, heightMin);
             }
             heightMin -= sizeTile;
-            if (this.transform.position.y + height / 2 + sizeTile < heightMax) heightMax -= sizeTile;
+            if (mainCamera.transform.position.y + height / 2 + sizeTile < heightMax) heightMax -= sizeTile;
         }
-        if (this.transform.position.x + width / 2 > widthMax)
+        if (mainCamera.transform.position.x + width / 2 > widthMax)
         {
             for (int y = heightMin; y < heightMax; y += sizeTile)
             {
@@ -75,10 +77,10 @@ public class SkyGenerator : MonoBehaviour
             widthMax += sizeTile;
         }
 
-        int size = skyGameObject.transform.childCount;
+        int size = this.transform.childCount;
         for (int i = 0; i < size; i++)
         {
-            GameObject skyTile = skyGameObject.transform.GetChild(i).gameObject;
+            GameObject skyTile = this.transform.GetChild(i).gameObject;
             if (skyTile.transform.position.x < widthMax - width || skyTile.transform.position.y < heightMin || skyTile.transform.position.y > heightMax)
             {
                 Destroy(skyTile);
@@ -91,7 +93,7 @@ public class SkyGenerator : MonoBehaviour
     {
         GameObject sky = Instantiate(skyPrefab) as GameObject;
         sky.transform.position = new Vector3(x, y, 0);
-        sky.transform.parent = skyGameObject.transform;
+        sky.transform.parent = this.transform;
 
         int nbCloud = random.Next(2);
         for (int i = 0; i < nbCloud; i++)

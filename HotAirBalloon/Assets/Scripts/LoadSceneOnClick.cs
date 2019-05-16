@@ -8,6 +8,6 @@ public class LoadSceneOnClick : MonoBehaviour
     // Start is called before the first frame update
     public void LoadByIndex(int sceneIndex)
     {
-        SceneManager.LoadScene (sceneIndex);
+        SceneManager.LoadScene(sceneIndex);
     }
 }

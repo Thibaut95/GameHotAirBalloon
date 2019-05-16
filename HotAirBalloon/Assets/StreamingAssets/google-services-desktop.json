@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "37683034272",
+    "firebase_url": "https://gamehotairballoon-1.firebaseio.com",
+    "project_id": "gamehotairballoon-1",
+    "storage_bucket": "gamehotairballoon-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37683034272:android:cab3d51348886edc",
+        "android_client_info": {
+          "package_name": "com.hesso.hotairballoon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "37683034272-vhlgi0vn603a07ksruucoga1tugfr2k0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8X1fIzJR96_6EWwiPQYvME1g56mDnSMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "37683034272-vhlgi0vn603a07ksruucoga1tugfr2k0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
