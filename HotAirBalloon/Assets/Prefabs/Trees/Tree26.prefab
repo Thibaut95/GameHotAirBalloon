@@ -27,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 670259787369358928}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.336, y: 0, z: 0}
-  m_LocalScale: {x: 0.12, y: 0.12, z: 0.12}
+  m_LocalPosition: {x: 0.007, y: 0.553, z: 0}
+  m_LocalScale: {x: 0.45306, y: 0.45306, z: 0.45306}
   m_Children: []
   m_Father: {fileID: 7520386897379930105}
   m_RootOrder: 0
@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -5
-  m_Sprite: {fileID: 21300000, guid: 0eb2e999bd31e912787c695e21b01de1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31ec65b3c15983cc69f36c92e43143be, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -123,12 +123,12 @@ PrefabInstance:
     - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.336
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.553
       objectReference: {fileID: 0}
     - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
         type: 3}
@@ -174,6 +174,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.45306
+      objectReference: {fileID: 0}
+    - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.45306
+      objectReference: {fileID: 0}
+    - target: {fileID: 5460365231424293948, guid: 34280f7c839903c319e1d3d59b939d22,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.45306
       objectReference: {fileID: 0}
     - target: {fileID: 3098612970829406953, guid: 34280f7c839903c319e1d3d59b939d22,
         type: 3}
