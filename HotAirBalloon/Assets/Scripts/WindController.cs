@@ -96,12 +96,12 @@ public class WindController : MonoBehaviour
         Vector3 position = this.transform.position;
         if (position.y / constants.GetFactorSize() > balloonControler.Geth0())
         {
-            float distance = strength * Time.deltaTime * (float)constants.GetTimeFactor();
-            balloonPosition.x += distance * (float)Math.Cos((Math.PI/180)*direction);
-            balloonPosition.y += distance * (float)Math.Sin((Math.PI/180)*direction);
+            float realDistance = strength * Time.deltaTime;
+            balloonPosition.x += realDistance * (float)constants.GetTimeFactorMap() * (float)Math.Cos((Math.PI/180)*direction);
+            balloonPosition.y += realDistance * (float)constants.GetTimeFactorMap() * (float)Math.Sin((Math.PI/180)*direction);
             Debug.Log(balloonPosition);
             updateBalloonOnMap();
-            position.x += distance * (float)constants.GetFactorSize();
+            position.x += realDistance * (float)constants.GetFactorSize() * (float)constants.GetTimeFactor();
         }
         this.transform.position = position;
 
@@ -114,5 +114,20 @@ public class WindController : MonoBehaviour
     public int DistanceToTarget()
     {
         return GetDistance(balloonPosition,targetPosition);
+    }
+
+    public int DistanceToStart()
+    {
+        return GetDistance(balloonPosition,startPosition);
+    }
+
+    public int DistanceStartToTarget()
+    {
+        return GetDistance(startPosition,targetPosition);
+    }
+
+    public float GetMaxStrength()
+    {
+        return windManager.GetMaxStrength()*(float)constants.GetTimeFactorMap();
     }
 }

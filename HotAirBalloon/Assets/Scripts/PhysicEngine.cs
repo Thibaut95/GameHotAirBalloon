@@ -19,9 +19,9 @@ public class PhysicEngine
     private const double V = 2973.0;
     private const double alphab = 3e6;
     private const double alphaCooler = -3e6;
-    private const double alphac = 3e-4;
+    // private const double alphac = 3e-4;
     // private const double alphac = 7e-5;
-    // private const double alphac = 2e-5;
+    private const double alphac = 1e-4;
     private const double gamma = 1.4;
     private const double Ru = 8314.3;
     private const double Mo = 28.96;
@@ -32,6 +32,8 @@ public class PhysicEngine
     private const double Psea = 102325.0;
     private const double T0 = 15 + Koffset;
 
+
+    private const double Vcooler = 100.0;
     private const int stepNumber = 2;
 
     private double h0;
@@ -78,7 +80,16 @@ public class PhysicEngine
 
         h = result[result.Length - 1][0];
         v = result[result.Length - 1][1];
-        Ti = result[result.Length - 1][2] - Koffset;
+        Ti = result[result.Length - 1][2];
+
+        if(coolerOn)
+        {
+            double percentageCooler = (Vcooler*duration) / V;
+            Ti = GetT(h) * percentageCooler + Ti * (1 - percentageCooler);
+        }
+
+        Ti -= Koffset;
+        
 
         if(h<=h0)
         {
@@ -179,10 +190,6 @@ public class PhysicEngine
             if (activateBurner)
             {
                 Qb += alphab;
-            }
-            if (activateCooler)
-            {
-                Qb += alphaCooler;
             }
         }
 

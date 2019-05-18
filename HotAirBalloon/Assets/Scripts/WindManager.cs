@@ -66,4 +66,9 @@ public class WindManager
         }
         return wind.strength;
     }
+
+    public float GetMaxStrength()
+    {
+        return maxStrengthWind;
+    }
 }

@@ -8,6 +8,8 @@ public class Constants : MonoBehaviour
     private double factorSize;
     [SerializeField]
     private double timeFactor;
+    [SerializeField]
+    private double timeFactorMap;
 
     public double GetFactorSize()
     {
@@ -17,5 +19,10 @@ public class Constants : MonoBehaviour
     public double GetTimeFactor()
     {
         return timeFactor;
+    }
+
+    public double GetTimeFactorMap()
+    {
+        return timeFactorMap;
     }
 }

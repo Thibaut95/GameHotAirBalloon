@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
@@ -8,12 +9,16 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject balloon;
+    [SerializeField]
+    private GameObject canvasUI;
 
     private bool endLevel = false;
     private float time = 0;
     private BalloonControler balloonControler;
     private WindController windController;
     private GameObject canvasFinish;
+    private GameObject littleNeedle;
+    private GameObject bigNeedle;
     DatabaseReference dbReference;
     Firebase.Auth.FirebaseAuth auth;
 
@@ -27,6 +32,8 @@ public class LevelManager : MonoBehaviour
         windController = balloon.GetComponent<WindController>();
         canvasFinish = this.transform.Find("CanvasFinish").gameObject;
         canvasFinish.SetActive(false);
+        littleNeedle = canvasUI.transform.Find("NeedleLittle").gameObject;
+        bigNeedle = canvasUI.transform.Find("NeedleBig").gameObject;
 
     }
 
@@ -47,6 +54,10 @@ public class LevelManager : MonoBehaviour
     void FixedUpdate()
     {
         time += Time.deltaTime;
+        float sec = time % 60;
+        float min = (time - sec)/60;
+        littleNeedle.transform.eulerAngles = new Vector3(0, 0, -sec*6);
+        bigNeedle.transform.eulerAngles = new Vector3(0, 0, -min*6);
     }
 
     public void StartGame()
@@ -94,6 +105,7 @@ public class LevelManager : MonoBehaviour
             else if (i == 3 && scoreTab[i].global < score.global)
             {
                 scoreTab[i] = score;
+                CreateBestScores(score, i);
             }
         }
     }
@@ -103,12 +115,31 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 0;
         canvasFinish.SetActive(true);
 
+        int score_dist = windController.DistanceStartToTarget()-windController.DistanceToTarget();
+        if(score_dist<0)score_dist=0;
+
+        float maxStrength = windController.GetMaxStrength();
+        
+        int minTime=(int)(windController.DistanceToStart()/(maxStrength))-5;
+        
+        float scoreTime = minTime/time;
+
+        float score_new = (float)score_dist+scoreTime;
+        
+
+        transform.Find("CanvasFinish").Find("TextDistance").GetComponent<Text>().text = string.Format("{0:0}", windController.DistanceToTarget()) + " M";
+        transform.Find("CanvasFinish").Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.0}", balloonControler.GetCurrentFuel()) + " L";
+        float sec = time % 60;
+        float min = (time - sec)/60;
+        transform.Find("CanvasFinish").Find("TextTime").GetComponent<Text>().text = string.Format("{0:0}", min) + " MIN "+string.Format("{0:0}", sec) + " SEC";
+        transform.Find("CanvasFinish").Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", score_new);
+
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
         //TODO compute global score
-        Score score = new Score(balloonControler.GetCurrentFuel(), windController.DistanceToTarget(), time, 0);
+        Score score = new Score(balloonControler.GetCurrentFuel(), windController.DistanceToTarget(), time, score_new);
         string json = JsonUtility.ToJson(score);
         // auth.CurrentUser.Email
         dbReference.Child("usersscores").Child("race"+StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Push().SetRawJsonValueAsync(json).ContinueWith(task =>
