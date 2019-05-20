@@ -25,7 +25,7 @@ public class WindController : MonoBehaviour
 
 
     private Constants constants;
-    private BalloonControler balloonControler;
+    private BalloonController balloonControler;
     private MapInfo mapInfo;
     private GameObject miniBalloon;
     private Vector2 startPosition;
@@ -41,7 +41,7 @@ public class WindController : MonoBehaviour
     void Start()
     {
         constants = constantsGameObject.GetComponent<Constants>();
-        balloonControler = this.GetComponent<BalloonControler>();
+        balloonControler = this.GetComponent<BalloonController>();
 
         int sizeTable = maxHeight / sizeArea;
         windManager.InitWinds(sizeTable);

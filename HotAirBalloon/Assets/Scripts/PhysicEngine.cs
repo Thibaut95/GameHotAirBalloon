@@ -71,7 +71,7 @@ public class PhysicEngine
 
     public void UpdateEngine(double duration, bool burnerOn, bool coolerOn)
     {
-        Func<double, Vector<double>, Vector<double>> f = (t, Y) => DXdt(t, Y, duration, burnerOn, coolerOn);
+        Func<double, Vector<double>, Vector<double>> f = (t, Y) => DXdt(t, Y, duration, burnerOn);
 
         double[] initialValues = new double[] { h, v, Ti + Koffset };
         Vector<double> initialVector = CreateVector.Dense<double>(initialValues);
@@ -90,7 +90,6 @@ public class PhysicEngine
 
         Ti -= Koffset;
         
-
         if(h<=h0)
         {
             h=h0;
@@ -160,7 +159,7 @@ public class PhysicEngine
         return T0 - a * Z;
     }
 
-    private Vector<double> DXdt(double t, Vector<double> Y, double burnerTime, bool activateBurner = true, bool activateCooler = false)
+    private Vector<double> DXdt(double t, Vector<double> Y, double burnerTime, bool activateBurner = true)
     {
         double h = Y[0];
         double v = Y[1];

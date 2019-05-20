@@ -48,6 +48,8 @@ public class ConnectionManagment : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale = 1;
+
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
 

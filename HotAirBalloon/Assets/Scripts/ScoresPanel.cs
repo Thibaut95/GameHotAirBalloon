@@ -154,6 +154,7 @@ public class ScoresPanel : MonoBehaviour
         }
         if(id!="")
         {
+            transform.Find("TextError").GetComponent<Text>().text = "";
             FirebaseDatabase.DefaultInstance.GetReference("usersscores/" + ("race" + race) + "/" + id).GetValueAsync().ContinueWith(task =>
             {
                 if (task.IsFaulted)
@@ -178,7 +179,9 @@ public class ScoresPanel : MonoBehaviour
         }
         else
         {
-            // TODO error message
+            transform.Find("TextError").GetComponent<Text>().text = "Le nom d'utilisateur n'existe pas";
+            otherScores.Clear();
+            updateTableOtherScore = true;
         }
     }
     private void GetUserScores()

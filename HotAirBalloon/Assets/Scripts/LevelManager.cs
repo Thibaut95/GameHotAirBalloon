@@ -14,7 +14,7 @@ public class LevelManager : MonoBehaviour
 
     private bool endLevel = false;
     private float time = 0;
-    private BalloonControler balloonControler;
+    private BalloonController balloonController;
     private WindController windController;
     private GameObject canvasFinish;
     private GameObject littleNeedle;
@@ -28,7 +28,7 @@ public class LevelManager : MonoBehaviour
         
 
         Time.timeScale = 0;
-        balloonControler = balloon.GetComponent<BalloonControler>();
+        balloonController = balloon.GetComponent<BalloonController>();
         windController = balloon.GetComponent<WindController>();
         canvasFinish = this.transform.Find("CanvasFinish").gameObject;
         canvasFinish.SetActive(false);
@@ -40,12 +40,12 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (balloonControler.Geth() > balloonControler.Geth0())
+        if (balloonController.Geth() > balloonController.Geth0())
         {
             endLevel = true;
         }
 
-        if (balloonControler.Geth() <= balloonControler.Geth0() && endLevel)
+        if (balloonController.Geth() <= balloonController.Geth0() && endLevel)
         {
             FinishGame();
         }
@@ -128,7 +128,7 @@ public class LevelManager : MonoBehaviour
         
 
         transform.Find("CanvasFinish").Find("TextDistance").GetComponent<Text>().text = string.Format("{0:0}", windController.DistanceToTarget()) + " M";
-        transform.Find("CanvasFinish").Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.0}", balloonControler.GetCurrentFuel()) + " L";
+        transform.Find("CanvasFinish").Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.0}", balloonController.GetCurrentFuel()) + " L";
         float sec = time % 60;
         float min = (time - sec)/60;
         transform.Find("CanvasFinish").Find("TextTime").GetComponent<Text>().text = string.Format("{0:0}", min) + " MIN "+string.Format("{0:0}", sec) + " SEC";
@@ -139,7 +139,7 @@ public class LevelManager : MonoBehaviour
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
         //TODO compute global score
-        Score score = new Score(balloonControler.GetCurrentFuel(), windController.DistanceToTarget(), time, score_new);
+        Score score = new Score(balloonController.GetCurrentFuel(), windController.DistanceToTarget(), time, score_new);
         string json = JsonUtility.ToJson(score);
         // auth.CurrentUser.Email
         dbReference.Child("usersscores").Child("race"+StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Push().SetRawJsonValueAsync(json).ContinueWith(task =>
