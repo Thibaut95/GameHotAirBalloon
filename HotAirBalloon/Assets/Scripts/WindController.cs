@@ -46,6 +46,8 @@ public class WindController : MonoBehaviour
         int sizeTable = maxHeight / sizeArea;
         windManager.InitWinds(sizeTable);
 
+        canvas.transform.Find("ForwardAccelerationIndicator").Find("TextMapAcceleration").GetComponent<Text>().text = "X"+((int)constants.GetTimeFactorMap()).ToString();
+
         GameObject map = Instantiate(Resources.Load("Map"+StaticClass.CrossSceneInformation), canvas.transform) as GameObject;
         map.transform.position = mapLocation.transform.position;
 

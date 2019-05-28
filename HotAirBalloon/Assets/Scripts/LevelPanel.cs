@@ -39,30 +39,30 @@ public class LevelPanel : MonoBehaviour
         {
             if (currentMapNumber + i < mapNumber)
             {
-                GameObject map = Instantiate(Resources.Load("Map"+(currentMapNumber+i))) as GameObject;
+                GameObject map = Instantiate(Resources.Load("Map" + (currentMapNumber + i))) as GameObject;
                 //GameObject map = Instantiate(Resources.Load("Map1")) as GameObject;
                 map.transform.parent = this.transform;
                 map.layer = 10;
                 map.GetComponent<RectTransform>().localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 map.GetComponent<RectTransform>().localPosition = new Vector3(i % 2 * 300 - 150, -((i / 2) * 120) + 60, 0);
 
-                Rect rect =  map.GetComponent<RectTransform>().rect;
+                Rect rect = map.GetComponent<RectTransform>().rect;
                 GameObject button = Instantiate(buttonPrefab);
-                button.transform.parent=this.transform;
+                button.transform.parent = this.transform;
                 button.GetComponent<RectTransform>().localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 button.GetComponent<RectTransform>().localPosition = new Vector3(i % 2 * 300 - 150, -((i / 2) * 120) + 60, 0);
-                button.GetComponent<RectTransform>().rect.Set(rect.x,rect.y,rect.width,rect.height);
-                
+                button.GetComponent<RectTransform>().rect.Set(rect.x, rect.y, rect.width, rect.height);
+
                 int j = i;
-                if(startGame)
+                if (startGame)
                 {
-                    button.GetComponent<Button>().onClick.AddListener(() => {LoadScene(currentMapNumber+j); });
+                    button.GetComponent<Button>().onClick.AddListener(() => { LoadScene(currentMapNumber + j); });
                 }
                 else
                 {
-                    button.GetComponent<Button>().onClick.AddListener(() => {LoadScoresMenu(currentMapNumber+j); });
+                    button.GetComponent<Button>().onClick.AddListener(() => { LoadScoresMenu(currentMapNumber + j); });
                 }
-                
+
             }
         }
 
@@ -87,7 +87,7 @@ public class LevelPanel : MonoBehaviour
 
     public void SetMenuType(bool startGame)
     {
-        this.startGame=startGame;
+        this.startGame = startGame;
         UpdateMaps();
     }
 
@@ -115,6 +115,11 @@ public class LevelPanel : MonoBehaviour
     {
         if (currentMapNumber > 0) currentMapNumber -= 4;
         UpdateMaps();
+    }
+
+    public int GetNbLevel()
+    {
+        return mapNumber;
     }
 
 }

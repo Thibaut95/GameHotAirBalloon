@@ -25,7 +25,7 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
 
         Time.timeScale = 0;
         balloonController = balloon.GetComponent<BalloonController>();
@@ -55,9 +55,9 @@ public class LevelManager : MonoBehaviour
     {
         time += Time.deltaTime;
         float sec = time % 60;
-        float min = (time - sec)/60;
-        littleNeedle.transform.eulerAngles = new Vector3(0, 0, -sec*6);
-        bigNeedle.transform.eulerAngles = new Vector3(0, 0, -min*6);
+        float min = (time - sec) / 60;
+        littleNeedle.transform.eulerAngles = new Vector3(0, 0, -sec * 6);
+        bigNeedle.transform.eulerAngles = new Vector3(0, 0, -min * 6);
     }
 
     public void StartGame()
@@ -69,15 +69,15 @@ public class LevelManager : MonoBehaviour
     {
         string json = JsonUtility.ToJson(score);
 
-        dbReference.Child("generalscores").Child("race"+StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Child("score" + index).SetRawJsonValueAsync(json).ContinueWith(task =>
-          {
-              if (task.IsFaulted)
-              {
-                  Debug.LogError("error: " + task.Exception);
-                  return;
-              }
-              Debug.LogFormat("Score inserted");
-          });
+        dbReference.Child("generalscores").Child("race" + StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Child("score" + index).SetRawJsonValueAsync(json).ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("error: " + task.Exception);
+                    return;
+                }
+                Debug.LogFormat("Score inserted");
+            });
 
     }
 
@@ -109,73 +109,86 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
+
+
+    public void BreakOnGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
+
     public void FinishGame()
     {
         endLevel = false;
         Time.timeScale = 0;
         canvasFinish.SetActive(true);
 
-        int score_dist = windController.DistanceStartToTarget()-windController.DistanceToTarget();
-        if(score_dist<0)score_dist=0;
+        int score_dist = windController.DistanceStartToTarget() - windController.DistanceToTarget();
+        if (score_dist < 0) score_dist = 0;
 
         float maxStrength = windController.GetMaxStrength();
-        
-        int minTime=(int)(windController.DistanceToStart()/(maxStrength))-5;
-        
-        float scoreTime = minTime/time;
+        int minTime = (int)(windController.DistanceToStart() / (maxStrength));
+        float scoreTime = minTime / time;
 
-        float score_new = (float)score_dist+scoreTime;
-        
+        float score_new = (float)score_dist + scoreTime;
+
 
         transform.Find("CanvasFinish").Find("TextDistance").GetComponent<Text>().text = string.Format("{0:0}", windController.DistanceToTarget()) + " M";
         transform.Find("CanvasFinish").Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.0}", balloonController.GetCurrentFuel()) + " L";
         float sec = time % 60;
-        float min = (time - sec)/60;
-        transform.Find("CanvasFinish").Find("TextTime").GetComponent<Text>().text = string.Format("{0:0}", min) + " MIN "+string.Format("{0:0}", sec) + " SEC";
+        float min = (time - sec) / 60;
+        transform.Find("CanvasFinish").Find("TextTime").GetComponent<Text>().text = string.Format("{0:0}", min) + " MIN " + string.Format("{0:0}", sec) + " SEC";
         transform.Find("CanvasFinish").Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", score_new);
 
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
-        //TODO compute global score
-        Score score = new Score(balloonController.GetCurrentFuel(), windController.DistanceToTarget(), time, score_new);
-        string json = JsonUtility.ToJson(score);
-        // auth.CurrentUser.Email
-        dbReference.Child("usersscores").Child("race"+StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Push().SetRawJsonValueAsync(json).ContinueWith(task =>
+        if (auth.CurrentUser != null)
         {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("error in inserting userscore: " + task.Exception);
-                return;
-            }
-            Debug.LogFormat("Score inserted");
-        });
+            Score score = new Score(balloonController.GetCurrentFuel(), windController.DistanceToTarget(), time, score_new);
+            string json = JsonUtility.ToJson(score);
 
-        FirebaseDatabase.DefaultInstance.GetReference("generalscores/"+("race"+StaticClass.CrossSceneInformation)+"/" + StaticClass.GetHashString(auth.CurrentUser.Email)).GetValueAsync().ContinueWith(task =>
-        {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("error in getting generalscores : " + task.Exception);
-                return;
-            }
-            else if (task.IsCompleted)
-            {
-                DataSnapshot snapshot = task.Result;
-                if (snapshot.Exists)
-                {
-                    Debug.Log("best scores allready exist");
-                    CheckAndUpdateBestScores(snapshot, score);
-                }
-                else
-                {
-                    Debug.Log("create best scores");
-                    for (int i = 0; i < 4; i++)
-                    {
-                        CreateBestScores(score, i);
-                    }
-                }
-            }
-        });
+            dbReference.Child("usersscores").Child("race" + StaticClass.CrossSceneInformation).Child(StaticClass.GetHashString(auth.CurrentUser.Email)).Push().SetRawJsonValueAsync(json).ContinueWith(task =>
+              {
+                  if (task.IsFaulted)
+                  {
+                      Debug.LogError("error in inserting userscore: " + task.Exception);
+                      return;
+                  }
+                  Debug.LogFormat("Score inserted");
+              });
+
+            FirebaseDatabase.DefaultInstance.GetReference("generalscores/" + ("race" + StaticClass.CrossSceneInformation) + "/" + StaticClass.GetHashString(auth.CurrentUser.Email)).GetValueAsync().ContinueWith(task =>
+                  {
+                      if (task.IsFaulted)
+                      {
+                          Debug.LogError("error in getting generalscores : " + task.Exception);
+                          return;
+                      }
+                      else if (task.IsCompleted)
+                      {
+                          DataSnapshot snapshot = task.Result;
+                          if (snapshot.Exists)
+                          {
+                              Debug.Log("best scores allready exist");
+                              CheckAndUpdateBestScores(snapshot, score);
+                          }
+                          else
+                          {
+                              Debug.Log("create best scores");
+                              for (int i = 0; i < 4; i++)
+                              {
+                                  CreateBestScores(score, i);
+                              }
+                          }
+                      }
+                  });
+        }
+
     }
 }

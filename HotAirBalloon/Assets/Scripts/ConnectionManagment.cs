@@ -30,15 +30,19 @@ public class ConnectionManagment : MonoBehaviour
     private GameObject deleteAccountPanel;
     [SerializeField]
     private GameObject settingsPanel;
+    [SerializeField]
+    private GameObject levelPanel;
 
     private Firebase.Auth.FirebaseAuth auth;
 
     private int cnt = 0;
     private bool connected = false;
     private bool usernameToCreate = false;
-    private bool insetNewUser = false;
+    private bool insertNewUser = false;
 
     private bool disconnect = false;
+
+    private bool showConnectionsPanel = false;
     private string errorMessage = "";
     private Text textError;
     private string username;
@@ -50,12 +54,25 @@ public class ConnectionManagment : MonoBehaviour
     {
         Time.timeScale = 1;
 
+
+
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
-
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
-        if (auth.CurrentUser == null)
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            errorMessage = "Pas de connexion internet, veuillez vous connecter et relancer le jeu";
+            connectionsPanel.transform.Find("ButtonConnection").GetComponent<Button>().interactable = false;
+            connectionsPanel.transform.Find("ButtonCreate").GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            connectionsPanel.transform.Find("ButtonConnection").GetComponent<Button>().interactable = true;
+            connectionsPanel.transform.Find("ButtonCreate").GetComponent<Button>().interactable = true;
+        }
+
+        if (auth.CurrentUser == null || Application.internetReachability == NetworkReachability.NotReachable)
         {
             connectionsPanel.SetActive(true);
             mainPanel.SetActive(false);
@@ -86,9 +103,9 @@ public class ConnectionManagment : MonoBehaviour
             mainPanel.SetActive(false);
             usernameToCreate = false;
         }
-        if (insetNewUser)
+        if (insertNewUser)
         {
-            insetNewUser = false;
+            insertNewUser = false;
             User user = new User(username, auth.CurrentUser.Email);
             string json = JsonUtility.ToJson(user);
             dbReference.Child("users").Child(StaticClass.GetHashString(auth.CurrentUser.Email)).SetRawJsonValueAsync(json).ContinueWith(task =>
@@ -102,10 +119,17 @@ public class ConnectionManagment : MonoBehaviour
                 connected = true;
             });
         }
-        if(disconnect)
+        if (disconnect)
         {
-            disconnect=false;
+            disconnect = false;
             Disconnect();
+        }
+        if (showConnectionsPanel)
+        {
+            showConnectionsPanel = false;
+            deleteAccountPanel.SetActive(false);
+            settingsPanel.SetActive(false);
+            connectionsPanel.SetActive(true);
         }
         if (errorMessage != "")
         {
@@ -124,6 +148,10 @@ public class ConnectionManagment : MonoBehaviour
             else if (resetPasswordPanel.active)
             {
                 textError = resetPasswordPanel.transform.Find("TextError").GetComponent<Text>();
+            }
+            else if (connectionsPanel.active)
+            {
+                textError = connectionsPanel.transform.Find("TextError").GetComponent<Text>();
             }
             textError.text = errorMessage;
             errorMessage = "";
@@ -176,8 +204,11 @@ public class ConnectionManagment : MonoBehaviour
                         case (int)Firebase.Auth.AuthError.InvalidEmail:
                             errorMessage = "Email invalide";
                             break;
+                        case (int)Firebase.Auth.AuthError.NetworkRequestFailed:
+                            errorMessage = "Pas de connexion internet";
+                            break;
                         default:
-                            errorMessage = fbEx.Message;
+                            errorMessage = "Une erreure est survenue, veuillez réessayer plus tard";
                             break;
                     }
                     Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + fbEx.ErrorCode + "   " + fbEx.Message);
@@ -222,7 +253,7 @@ public class ConnectionManagment : MonoBehaviour
 
                 Debug.LogFormat("Username successfully inserted");
 
-                insetNewUser = true;
+                insertNewUser = true;
             });
         }
     }
@@ -255,8 +286,11 @@ public class ConnectionManagment : MonoBehaviour
                         case (int)Firebase.Auth.AuthError.InvalidEmail:
                             errorMessage = "Email invalide";
                             break;
+                        case (int)Firebase.Auth.AuthError.NetworkRequestFailed:
+                            errorMessage = "Pas de connexion internet";
+                            break;
                         default:
-                            errorMessage = fbEx.Message;
+                            errorMessage = "Une erreure est survenue, veuillez réessayer plus tard";
                             break;
                     }
                     Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + fbEx.ErrorCode + "   " + fbEx.Message);
@@ -279,7 +313,6 @@ public class ConnectionManagment : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
-        // SendResetEmail();
     }
 
     public void OpenKeyBoard()
@@ -313,24 +346,58 @@ public class ConnectionManagment : MonoBehaviour
 
     public void DeleteAccount()
     {
-        if (auth.CurrentUser != null)
+        int nbLevel = levelPanel.GetComponent<LevelPanel>().GetNbLevel();
+        string id = StaticClass.GetHashString(auth.CurrentUser.Email);
+
+        for (int i = 0; i < nbLevel; i++)
         {
-            auth.CurrentUser.DeleteAsync().ContinueWith(task =>
-            {
-                if (task.IsCanceled)
-                {
-                    Debug.LogError("DeleteAsync was canceled.");
-                    return;
-                }
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("DeleteAsync encountered an error: " + task.Exception);
-                    return;
-                }
-
-
-                Debug.Log("User deleted successfully.");
-            });
+            dbReference.Child("generalscores").Child("race" + i).Child(id).RemoveValueAsync();
+            dbReference.Child("usersscores").Child("race" + i).Child(id).RemoveValueAsync();
         }
+
+        dbReference.Child("users").Child(id).RemoveValueAsync();
+
+        dbReference.Child("usernames").OrderByValue().EqualTo(auth.CurrentUser.Email).GetValueAsync().ContinueWith(task =>
+        {
+
+            if (task.IsFaulted)
+            {
+                Debug.LogError("error in getting usernames : " + task.Exception);
+                return;
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+
+                if (snapshot.Exists)
+                {
+                    Debug.Log(snapshot.ChildrenCount);
+                    foreach (var item in snapshot.Children)
+                    {
+                        dbReference.Child("usernames").Child(item.Key).RemoveValueAsync();
+                        auth.CurrentUser.DeleteAsync().ContinueWith(task2 =>
+                        {
+                            if (task2.IsCanceled)
+                            {
+                                Debug.LogError("DeleteAsync was canceled.");
+                                return;
+                            }
+                            if (task2.IsFaulted)
+                            {
+                                Debug.LogError("DeleteAsync encountered an error: " + task2.Exception);
+                                return;
+                            }
+
+                            Debug.Log("User deleted successfully.");
+                        });
+                        showConnectionsPanel=true;
+                        
+                        // disconnect=true;
+                        Debug.Log(item.Key);
+                    }
+                }
+
+            }
+        });
     }
 }
