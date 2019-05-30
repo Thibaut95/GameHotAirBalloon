@@ -6810,7 +6810,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1808122432}
-        m_MethodName: GetAutherUserScores
+        m_MethodName: GetOtherUserScores
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15172,15 +15172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7255bc39a0382a0febb407d2db5d88b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainPanel: {fileID: 133953664}
-  connectionPanel: {fileID: 5587733}
-  createPanel: {fileID: 1770538012}
-  usernamePanel: {fileID: 1415300840}
-  connectionsPanel: {fileID: 1561180517}
-  resetPasswordPanel: {fileID: 2133324711}
-  deleteAccountPanel: {fileID: 397355425}
-  settingsPanel: {fileID: 1811876901}
-  levelPanel: {fileID: 1879839393}
+  canvasPanel: {fileID: 472367352}
 --- !u!1 &1924294883
 GameObject:
   m_ObjectHideFlags: 0

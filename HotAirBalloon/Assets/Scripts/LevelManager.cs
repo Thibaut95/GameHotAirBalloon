@@ -25,8 +25,6 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-
         Time.timeScale = 0;
         balloonController = balloon.GetComponent<BalloonController>();
         windController = balloon.GetComponent<WindController>();
@@ -34,7 +32,6 @@ public class LevelManager : MonoBehaviour
         canvasFinish.SetActive(false);
         littleNeedle = canvasUI.transform.Find("NeedleLittle").gameObject;
         bigNeedle = canvasUI.transform.Find("NeedleBig").gameObject;
-
     }
 
     // Update is called once per frame
@@ -78,7 +75,6 @@ public class LevelManager : MonoBehaviour
                 }
                 Debug.LogFormat("Score inserted");
             });
-
     }
 
     public void CheckAndUpdateBestScores(DataSnapshot snapshot, Score score)
@@ -110,7 +106,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-
     public void BreakOnGame()
     {
         Time.timeScale = 0;
@@ -135,7 +130,6 @@ public class LevelManager : MonoBehaviour
         float scoreTime = minTime / time;
 
         float score_new = (float)score_dist + scoreTime;
-
 
         transform.Find("CanvasFinish").Find("TextDistance").GetComponent<Text>().text = string.Format("{0:0}", windController.DistanceToTarget()) + " M";
         transform.Find("CanvasFinish").Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.0}", balloonController.GetCurrentFuel()) + " L";
@@ -164,31 +158,30 @@ public class LevelManager : MonoBehaviour
               });
 
             FirebaseDatabase.DefaultInstance.GetReference("generalscores/" + ("race" + StaticClass.CrossSceneInformation) + "/" + StaticClass.GetHashString(auth.CurrentUser.Email)).GetValueAsync().ContinueWith(task =>
-                  {
-                      if (task.IsFaulted)
-                      {
-                          Debug.LogError("error in getting generalscores : " + task.Exception);
-                          return;
-                      }
-                      else if (task.IsCompleted)
-                      {
-                          DataSnapshot snapshot = task.Result;
-                          if (snapshot.Exists)
-                          {
-                              Debug.Log("best scores allready exist");
-                              CheckAndUpdateBestScores(snapshot, score);
-                          }
-                          else
-                          {
-                              Debug.Log("create best scores");
-                              for (int i = 0; i < 4; i++)
-                              {
-                                  CreateBestScores(score, i);
-                              }
-                          }
-                      }
-                  });
+                {
+                    if (task.IsFaulted)
+                    {
+                        Debug.LogError("error in getting generalscores : " + task.Exception);
+                        return;
+                    }
+                    else if (task.IsCompleted)
+                    {
+                        DataSnapshot snapshot = task.Result;
+                        if (snapshot.Exists)
+                        {
+                            Debug.Log("best scores allready exist");
+                            CheckAndUpdateBestScores(snapshot, score);
+                        }
+                        else
+                        {
+                            Debug.Log("create best scores");
+                            for (int i = 0; i < 4; i++)
+                            {
+                                CreateBestScores(score, i);
+                            }
+                        }
+                    }
+                });
         }
-
     }
 }

@@ -8,33 +8,25 @@ public class LandGenerator : MonoBehaviour
     private float offsetGround;
     [SerializeField]
     private GameObject mainCamera;
-
     [SerializeField]
     private Biome[] biomes;
-
     [SerializeField]
     private int sizeTile;
-
     [SerializeField]
     private int width;
-
     [SerializeField]
     private GameObject frontDecor;
-
     [SerializeField]
     private GameObject backDecor;
-
     [SerializeField]
     private GameObject cloudDecor;
-
     [SerializeField]
     private GameObject cloud;
 
     private Vector3 positionNextTile;
-
-
     private int biome;
     private System.Random random;
+
     // Start is called before the first frame update
     void Start()
     {

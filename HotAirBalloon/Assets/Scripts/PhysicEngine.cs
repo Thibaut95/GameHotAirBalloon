@@ -165,12 +165,6 @@ public class PhysicEngine
         double v = Y[1];
         double Ti = Y[2];
 
-        // if (h <= 0)
-        // {
-        //     h = 0;
-        //     v = 0;
-        // }
-
         double To = GetT(h);
         double rhoo = GetRhoo(To, h);
         double P = rhoo * Ra * To;
@@ -180,7 +174,6 @@ public class PhysicEngine
         double DF = (1.0 / 2.0) * (rhoo * v * Math.Abs(v) * Cd * Math.PI * D * D) / 4;
 
         double acc = (L - W - DF) / (V * rhoo * fapp + Mtot);
-        //if (h <= 0) acc = 0;
 
         double Qa = -V * rhoo * g / (gamma - 1) * v;
         double Qb = 0;
@@ -191,7 +184,6 @@ public class PhysicEngine
                 Qb += alphab;
             }
         }
-
 
         double Qc = alphac * (Math.Pow(Ti, 4) - Math.Pow(To, 4));
         double Qm = Qb - Qa - Qc;

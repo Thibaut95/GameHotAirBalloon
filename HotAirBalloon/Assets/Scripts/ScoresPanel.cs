@@ -6,22 +6,17 @@ using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
 using System;
+using Firebase.Auth;
 
 public class ScoresPanel : MonoBehaviour
 {
-    private Firebase.Auth.FirebaseAuth auth;
+    private FirebaseAuth auth;
     private DatabaseReference dbReference;
-
     private Dictionary<string, User> users;
-
     private List<List<Tuple<string, Score>>> bestScores;
-
     private List<Score> personalScores;
     private List<Score> otherScores;
-
-    private bool updateTableUserScore = false;
-    private bool updateTableOtherScore = false;
-    private bool updateTableGeneralScore = false;
+    private string state = "";
     private int race;
 
     // Start is called before the first frame update
@@ -29,7 +24,6 @@ public class ScoresPanel : MonoBehaviour
     {
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
-        
 
         bestScores = new List<List<Tuple<string, Score>>>();
         users = new Dictionary<string, User>();
@@ -44,20 +38,17 @@ public class ScoresPanel : MonoBehaviour
 
     void Update()
     {
-        if (updateTableUserScore)
+        switch (state)
         {
-            updateTableUserScore = false;
-            this.transform.Find("UserScore").GetComponent<TableScore>().SetScores(personalScores);
-        }
-        if (updateTableOtherScore)
-        {
-            updateTableOtherScore = false;
-            this.transform.Find("OtherUserScore").GetComponent<TableScore>().SetScores(otherScores);
-        }
-        if (updateTableGeneralScore)
-        {
-            updateTableGeneralScore = false;
-            this.transform.Find("GeneralScore").GetComponent<TableGeneral>().SetScores(bestScores);
+            case "updateTableUserScore":
+                this.transform.Find("UserScore").GetComponent<TableScore>().SetScores(personalScores);
+                break;
+            case "updateTableOtherScore":
+                this.transform.Find("OtherUserScore").GetComponent<TableScore>().SetScores(otherScores);
+                break;
+            case "updateTableGeneralScore":
+                this.transform.Find("GeneralScore").GetComponent<TableGeneral>().SetScores(bestScores);
+                break;
         }
     }
 
@@ -75,7 +66,7 @@ public class ScoresPanel : MonoBehaviour
                 bestScores[i].Add(new Tuple<string, Score>(users[item.Key].username, score));
             }
         }
-        updateTableGeneralScore = true;
+        state = "updateTableGeneralScore";
     }
 
     private void UpdateListUserScores(DataSnapshot snapshot)
@@ -86,9 +77,7 @@ public class ScoresPanel : MonoBehaviour
             Score score = JsonUtility.FromJson<Score>(item.GetRawJsonValue());
             personalScores.Add(score);
         }
-        Debug.Log("usersscores update");
-        updateTableUserScore = true;
-
+        state = "updateTableUserScore";
     }
 
     private void UpdateListOtherScores(DataSnapshot snapshot)
@@ -99,9 +88,7 @@ public class ScoresPanel : MonoBehaviour
             Score score = JsonUtility.FromJson<Score>(item.GetRawJsonValue());
             otherScores.Add(score);
         }
-        Debug.Log("otherscores update");
-        updateTableOtherScore = true;
-
+        state = "updateTableOtherScore";
     }
 
     private void UpdateListUsers(DataSnapshot snapshot)
@@ -127,32 +114,23 @@ public class ScoresPanel : MonoBehaviour
             {
                 DataSnapshot snapshot = task.Result;
                 UpdateListBestScores(snapshot);
-                if (snapshot.Exists)
-                {
-                    Debug.Log("generalscores get");
-                    
-                }
-                else
-                {
-                    Debug.Log("no data");
-                }
             }
         });
     }
 
-    public void GetAutherUserScores()
+    public void GetOtherUserScores()
     {
         string username = transform.Find("OtherUserScore").Find("InputFieldUserName").Find("Text").GetComponent<Text>().text;
-        string id="";
+        string id = "";
         foreach (var item in users)
         {
-            if(item.Value.username==username)
+            if (item.Value.username == username)
             {
-                id=item.Key;
+                id = item.Key;
                 break;
             }
         }
-        if(id!="")
+        if (id != "")
         {
             transform.Find("TextError").GetComponent<Text>().text = "";
             FirebaseDatabase.DefaultInstance.GetReference("usersscores/" + ("race" + race) + "/" + id).GetValueAsync().ContinueWith(task =>
@@ -181,7 +159,7 @@ public class ScoresPanel : MonoBehaviour
         {
             transform.Find("TextError").GetComponent<Text>().text = "Le nom d'utilisateur n'existe pas";
             otherScores.Clear();
-            updateTableOtherScore = true;
+            state = "updateTableOtherScore";
         }
     }
     private void GetUserScores()
@@ -197,14 +175,6 @@ public class ScoresPanel : MonoBehaviour
             {
                 DataSnapshot snapshot = task.Result;
                 UpdateListUserScores(snapshot);
-                if (snapshot.Exists)
-                {
-                    Debug.Log("userscores get");
-                }
-                else
-                {
-                    Debug.Log("no data");
-                }
             }
         });
     }
@@ -223,25 +193,16 @@ public class ScoresPanel : MonoBehaviour
                 DataSnapshot snapshot = task.Result;
                 UpdateListUsers(snapshot);
                 GetGeneralScores();
-                if (snapshot.Exists)
-                {
-                    Debug.Log("users get");
-                }
-                else
-                {
-                    Debug.Log("no data");
-                }
             }
         });
     }
 
-    // Update is called once per frame
     public void UpdateScoresPanel(int race)
     {
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
         this.race = race;
-        transform.Find("TextRace").GetComponent<Text>().text = "Scores pour la course "+(race+1);
+        transform.Find("TextRace").GetComponent<Text>().text = "Scores pour la course " + (race + 1);
         GetUserScores();
-        GetUsers(); 
+        GetUsers();
     }
 }

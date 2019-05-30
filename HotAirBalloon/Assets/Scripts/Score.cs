@@ -5,13 +5,12 @@ public class Score
     public int distance;
     public float time;
     public float global;
-    public DateTime date;
+
     public Score(float fuel, int distance, float time, float global)
     {
         this.fuel = fuel;
         this.distance = distance;
         this.time = time;
         this.global = global;
-        this.date = DateTime.Now;
     }
 }

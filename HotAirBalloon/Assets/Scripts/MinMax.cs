@@ -4,7 +4,6 @@ using System;
 
 public class MinMax
 {
-
     private float min;
     private float max;
     private float step;

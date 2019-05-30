@@ -1,60 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
 using UnityEngine.SceneManagement;
-
-// User user = new User("test"+cnt, "test");
-// string json = JsonUtility.ToJson(user);
-// dbReference.Child("users").SetRawJsonValueAsync(json);
-// cnt++;
+using Firebase.Auth;
 
 public class ConnectionManagment : MonoBehaviour
 {
     [SerializeField]
-    private GameObject mainPanel;
-    [SerializeField]
-    private GameObject connectionPanel;
-    [SerializeField]
-    private GameObject createPanel;
-    [SerializeField]
-    private GameObject usernamePanel;
-    [SerializeField]
-    private GameObject connectionsPanel;
-    [SerializeField]
-    private GameObject resetPasswordPanel;
-    [SerializeField]
-    private GameObject deleteAccountPanel;
-    [SerializeField]
-    private GameObject settingsPanel;
-    [SerializeField]
-    private GameObject levelPanel;
+    private GameObject canvasPanel;
 
-    private Firebase.Auth.FirebaseAuth auth;
 
-    private int cnt = 0;
-    private bool connected = false;
-    private bool usernameToCreate = false;
-    private bool insertNewUser = false;
-
-    private bool disconnect = false;
-
-    private bool showConnectionsPanel = false;
+    private string state = "";
     private string errorMessage = "";
-    private Text textError;
+    private FirebaseAuth auth;
+    private DatabaseReference dbReference;
     private string username;
 
-
-    private DatabaseReference dbReference;
     // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 1;
-
-
 
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://gamehotairballoon-1.firebaseio.com/");
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -63,19 +33,18 @@ public class ConnectionManagment : MonoBehaviour
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
             errorMessage = "Pas de connexion internet, veuillez vous connecter et relancer le jeu";
-            connectionsPanel.transform.Find("ButtonConnection").GetComponent<Button>().interactable = false;
-            connectionsPanel.transform.Find("ButtonCreate").GetComponent<Button>().interactable = false;
+            canvasPanel.transform.Find("ConnectionsPanel").Find("ButtonConnection").GetComponent<Button>().interactable = false;
+            canvasPanel.transform.Find("ConnectionsPanel").Find("ButtonCreate").GetComponent<Button>().interactable = false;
         }
         else
         {
-            connectionsPanel.transform.Find("ButtonConnection").GetComponent<Button>().interactable = true;
-            connectionsPanel.transform.Find("ButtonCreate").GetComponent<Button>().interactable = true;
+            canvasPanel.transform.Find("ConnectionsPanel").Find("ButtonConnection").GetComponent<Button>().interactable = true;
+            canvasPanel.transform.Find("ConnectionsPanel").Find("ButtonCreate").GetComponent<Button>().interactable = true;
         }
 
         if (auth.CurrentUser == null || Application.internetReachability == NetworkReachability.NotReachable)
         {
-            connectionsPanel.SetActive(true);
-            mainPanel.SetActive(false);
+            state = "notConnected";
         }
         else
         {
@@ -83,77 +52,38 @@ public class ConnectionManagment : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        if (connected)
+        switch (state)
         {
-            connectionsPanel.SetActive(false);
-            createPanel.SetActive(false);
-            connectionPanel.SetActive(false);
-            usernamePanel.SetActive(false);
-            mainPanel.SetActive(true);
-            connected = false;
+            case "connected":
+                ShowPanel("MainPanel");
+                break;
+            case "usernameToCreate":
+                ShowPanel("UsernamePanel");
+                break;
+            case "insertNewUser":
+                InsertNewUser();
+                break;
+            case "disconnect":
+                Disconnect();
+                break;
+            case "notConnected":
+                ShowPanel("ConnectionsPanel");
+                break;
         }
-        if (usernameToCreate)
-        {
-            connectionsPanel.SetActive(false);
-            createPanel.SetActive(false);
-            connectionPanel.SetActive(false);
-            usernamePanel.SetActive(true);
-            mainPanel.SetActive(false);
-            usernameToCreate = false;
-        }
-        if (insertNewUser)
-        {
-            insertNewUser = false;
-            User user = new User(username, auth.CurrentUser.Email);
-            string json = JsonUtility.ToJson(user);
-            dbReference.Child("users").Child(StaticClass.GetHashString(auth.CurrentUser.Email)).SetRawJsonValueAsync(json).ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError("error: " + task.Exception);
-                    return;
-                }
-                Debug.LogFormat("Username successfully inserted");
-                connected = true;
-            });
-        }
-        if (disconnect)
-        {
-            disconnect = false;
-            Disconnect();
-        }
-        if (showConnectionsPanel)
-        {
-            showConnectionsPanel = false;
-            deleteAccountPanel.SetActive(false);
-            settingsPanel.SetActive(false);
-            connectionsPanel.SetActive(true);
-        }
+        state = "";
+
         if (errorMessage != "")
         {
-            if (createPanel.active)
+            for (int i = 0; i < canvasPanel.transform.childCount; i++)
             {
-                textError = createPanel.transform.Find("TextError").GetComponent<Text>();
+                GameObject panel = canvasPanel.transform.GetChild(i).gameObject;
+                if (panel.active)
+                {
+                    panel.transform.Find("TextError").GetComponent<Text>().text = errorMessage;
+                }
             }
-            else if (connectionPanel.active)
-            {
-                textError = connectionPanel.transform.Find("TextError").GetComponent<Text>();
-            }
-            else if (usernamePanel.active)
-            {
-                textError = usernamePanel.transform.Find("TextError").GetComponent<Text>();
-            }
-            else if (resetPasswordPanel.active)
-            {
-                textError = resetPasswordPanel.transform.Find("TextError").GetComponent<Text>();
-            }
-            else if (connectionsPanel.active)
-            {
-                textError = connectionsPanel.transform.Find("TextError").GetComponent<Text>();
-            }
-            textError.text = errorMessage;
             errorMessage = "";
         }
     }
@@ -161,26 +91,56 @@ public class ConnectionManagment : MonoBehaviour
     private void CheckUser()
     {
         FirebaseDatabase.DefaultInstance.GetReference("users/" + StaticClass.GetHashString(auth.CurrentUser.Email)).GetValueAsync().ContinueWith(task =>
-          {
-              if (task.IsFaulted)
-              {
-                  // Handle the error...
-              }
-              else if (task.IsCompleted)
-              {
-                  DataSnapshot snapshot = task.Result;
-                  if (!snapshot.Exists)
-                  {
-                      usernameToCreate = true;
-                  }
-              }
-          });
+        {
+            if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                if (snapshot.Exists)
+                {
+                    state = "connected";
+                }
+                else
+                {
+                    state = "usernameToCreate";
+                }
+            }
+        });
+    }
+
+    private void InsertNewUser()
+    {
+        User user = new User(username, auth.CurrentUser.Email);
+        string json = JsonUtility.ToJson(user);
+        dbReference.Child("users").Child(StaticClass.GetHashString(auth.CurrentUser.Email)).SetRawJsonValueAsync(json).ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError("error: " + task.Exception);
+                return;
+            }
+            Debug.LogFormat("Username successfully inserted");
+            state = "connected";
+        });
+    }
+
+    private void ShowPanel(string[] panelsNames)
+    {
+        for (int i = 0; i < canvasPanel.transform.childCount; i++)
+        {
+            GameObject panel = canvasPanel.transform.GetChild(i).gameObject;
+            panel.SetActive(Array.IndexOf(panelsNames, panel.name) != -1);
+        }
+    }
+
+    private void ShowPanel(string panelName)
+    {
+        ShowPanel(new string[] { panelName });
     }
 
     public void Connect()
     {
-        string email = connectionPanel.transform.Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
-        string psw = connectionPanel.transform.Find("InputFieldPassword").GetComponent<InputField>().text;
+        string email = canvasPanel.transform.Find("ConnectionPanel").Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
+        string psw = canvasPanel.transform.Find("ConnectionPanel").Find("InputFieldPassword").GetComponent<InputField>().text;
 
         if (email == "" || psw == "")
         {
@@ -218,7 +178,7 @@ public class ConnectionManagment : MonoBehaviour
                 Firebase.Auth.FirebaseUser newUser = task.Result;
                 Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
                 CheckUser();
-                connected = true;
+                state = "connected";
             });
         }
     }
@@ -226,43 +186,24 @@ public class ConnectionManagment : MonoBehaviour
     public void Disconnect()
     {
         auth.SignOut();
-        deleteAccountPanel.SetActive(false);
-        settingsPanel.SetActive(false);
-        connectionsPanel.SetActive(true);
-        mainPanel.SetActive(false);
+        state="notConnected";
     }
 
-    public void CreateUsername()
+    public void Quit()
     {
-        username = usernamePanel.transform.Find("InputFieldUsername").Find("Text").GetComponent<Text>().text;
+        Application.Quit();
+    }
 
-        if (username == "")
-        {
-            errorMessage = "Veuillez saisir un nom d'utilisateur";
-        }
-        else
-        {
-            dbReference.Child("usernames").Child(username).SetRawJsonValueAsync("\"" + auth.CurrentUser.Email + "\"").ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    errorMessage = "Nom d'utilisateur déjà utilisé";
-                    Debug.LogError(" error: " + task.Exception);
-                    return;
-                }
-
-                Debug.LogFormat("Username successfully inserted");
-
-                insertNewUser = true;
-            });
-        }
+    public void OpenKeyBoard()
+    {
+        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
     }
 
     public void CreateAccount()
     {
-        string email = createPanel.transform.Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
-        string psw1 = createPanel.transform.Find("InputFieldPassword1").GetComponent<InputField>().text;
-        string psw2 = createPanel.transform.Find("InputFieldPassword2").GetComponent<InputField>().text;
+        string email = canvasPanel.transform.Find("CreateAccountPanel").Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
+        string psw1 = canvasPanel.transform.Find("CreateAccountPanel").Find("InputFieldPassword1").GetComponent<InputField>().text;
+        string psw2 = canvasPanel.transform.Find("CreateAccountPanel").Find("InputFieldPassword2").GetComponent<InputField>().text;
 
         if (email == "" || psw1 == "" || psw2 == "")
         {
@@ -301,7 +242,7 @@ public class ConnectionManagment : MonoBehaviour
                 Firebase.Auth.FirebaseUser newUser = task.Result;
                 Debug.LogFormat("Firebase user created successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
 
-                usernameToCreate = true;
+                state = "usernameToCreate";
             });
         }
         else
@@ -310,19 +251,35 @@ public class ConnectionManagment : MonoBehaviour
         }
     }
 
-    public void Quit()
+    public void CreateUsername()
     {
-        Application.Quit();
-    }
+        username = canvasPanel.transform.Find("UsernamePanel").transform.Find("InputFieldUsername").Find("Text").GetComponent<Text>().text;
 
-    public void OpenKeyBoard()
-    {
-        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
+        if (username == "")
+        {
+            errorMessage = "Veuillez saisir un nom d'utilisateur";
+        }
+        else
+        {
+            dbReference.Child("usernames").Child(username).SetRawJsonValueAsync("\"" + auth.CurrentUser.Email + "\"").ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    errorMessage = "Nom d'utilisateur déjà utilisé";
+                    Debug.LogError(" error: " + task.Exception);
+                    return;
+                }
+
+                Debug.LogFormat("Username successfully inserted");
+
+                state = "insertNewUser";
+            });
+        }
     }
 
     public void SendResetEmail()
     {
-        string emailAddress = resetPasswordPanel.transform.Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
+        string emailAddress = canvasPanel.transform.Find("ResetPasswordPanel").transform.Find("InputFieldEmail").Find("Text").GetComponent<Text>().text;
 
         auth.SendPasswordResetEmailAsync(emailAddress).ContinueWith(task =>
         {
@@ -339,14 +296,12 @@ public class ConnectionManagment : MonoBehaviour
 
             Debug.Log("Password reset email sent successfully.");
             errorMessage = "Un email de réinitialisation a été envoyé";
-
         });
-
     }
 
     public void DeleteAccount()
     {
-        int nbLevel = levelPanel.GetComponent<LevelPanel>().GetNbLevel();
+        int nbLevel = canvasPanel.transform.Find("LevelPanel").GetComponent<LevelPanel>().GetNbLevel();
         string id = StaticClass.GetHashString(auth.CurrentUser.Email);
 
         for (int i = 0; i < nbLevel; i++)
@@ -359,10 +314,9 @@ public class ConnectionManagment : MonoBehaviour
 
         dbReference.Child("usernames").OrderByValue().EqualTo(auth.CurrentUser.Email).GetValueAsync().ContinueWith(task =>
         {
-
             if (task.IsFaulted)
             {
-                Debug.LogError("error in getting usernames : " + task.Exception);
+                Debug.LogError("error in getting usernames for deletion : " + task.Exception);
                 return;
             }
             else if (task.IsCompleted)
@@ -390,10 +344,7 @@ public class ConnectionManagment : MonoBehaviour
 
                             Debug.Log("User deleted successfully.");
                         });
-                        showConnectionsPanel=true;
-                        
-                        // disconnect=true;
-                        Debug.Log(item.Key);
+                        state = "notConnected";
                     }
                 }
 

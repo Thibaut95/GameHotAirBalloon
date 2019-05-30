@@ -5,9 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
-
-
 public class LevelPanel : MonoBehaviour
 {
     [SerializeField]
@@ -121,5 +118,4 @@ public class LevelPanel : MonoBehaviour
     {
         return mapNumber;
     }
-
 }

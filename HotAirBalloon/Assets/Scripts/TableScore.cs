@@ -8,17 +8,6 @@ public class TableScore : MonoBehaviour
     private GameObject linePrefab;
 
     private List<Score> listScore;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void SortBy(string columnName)
     {
@@ -79,7 +68,6 @@ public class TableScore : MonoBehaviour
 
         int posY = (listScore.Count * 30) / 2 - 110;
 
-
         foreach (var item in listScore)
         {
             GameObject line = Instantiate(linePrefab, content.transform);
@@ -98,7 +86,5 @@ public class TableScore : MonoBehaviour
             line.transform.Find("TextDistance").GetComponent<Text>().text = item.distance.ToString();
             line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", item.global);
         }
-
-
     }
 }

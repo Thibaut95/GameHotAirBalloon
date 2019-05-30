@@ -10,17 +10,6 @@ public class TableGeneral : MonoBehaviour
 
     private List<List<Tuple<string, Score>>> listScore;
     private int index = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void ChangeList()
     {
@@ -86,7 +75,5 @@ public class TableGeneral : MonoBehaviour
             line.transform.Find("TextDistance").GetComponent<Text>().text = item.Item2.distance.ToString();
             line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", item.Item2.global);
         }
-
-
     }
 }
