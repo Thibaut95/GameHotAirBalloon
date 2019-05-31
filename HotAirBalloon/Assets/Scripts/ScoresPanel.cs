@@ -72,6 +72,7 @@ public class ScoresPanel : MonoBehaviour
     private void UpdateListUserScores(DataSnapshot snapshot)
     {
         personalScores.Clear();
+        Debug.Log(snapshot.GetRawJsonValue());
         foreach (var item in snapshot.Children)
         {
             Score score = JsonUtility.FromJson<Score>(item.GetRawJsonValue());

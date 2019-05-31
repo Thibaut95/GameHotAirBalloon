@@ -11,6 +11,8 @@ public class Constants : MonoBehaviour
     [SerializeField]
     private double timeFactorMap;
 
+    public int maxHeight;
+
     public double GetFactorSize()
     {
         return factorSize;

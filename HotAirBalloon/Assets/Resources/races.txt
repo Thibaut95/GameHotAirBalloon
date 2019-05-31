@@ -1,0 +1,18 @@
+{
+    "0":
+    {
+        "name":"Lausanne - Fribourg",
+        "latitudeStart":46.5285767,
+        "longitudeStart":6.5824554,
+        "latitudeTarget":46.803193,
+        "longitudeTarget":7.1422554
+    },
+    "1":
+    {
+        "name":"Berne - Saint-Gall",
+        "latitudeStart":46.9547232,
+        "longitudeStart":7.3598507,
+        "latitudeTarget":47.4241176,
+        "longitudeTarget":9.3283507
+    },
+}

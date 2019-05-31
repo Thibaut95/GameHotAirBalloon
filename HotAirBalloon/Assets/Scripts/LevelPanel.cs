@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class LevelPanel : MonoBehaviour
 {
@@ -20,28 +21,60 @@ public class LevelPanel : MonoBehaviour
 
     private int currentMapNumber;
     private bool startGame;
+    private List<RacePositions> listRacePositions;
     // Start is called before the first frame update
     void Start()
     {
         currentMapNumber = 0;
+
+        
+        
+    }
+
+    private void GetRaceFromFile()
+    {
+        listRacePositions = new List<RacePositions>();
+        string path = "Assets/Resources/races.txt";
+
+        //Read the text from directly from the test.txt file
+        StreamReader reader = new StreamReader(path); 
+        string values=reader.ReadToEnd();
+
+        string[] valueSplit = values.Split('{','}');
+        for (int i = 0; i < valueSplit.Length; i++)
+        {
+            if(i%2==0 && i!=0 && i != valueSplit.Length-1)
+            {
+                RacePositions race = JsonUtility.FromJson<RacePositions>("{"+valueSplit[i]+"}");
+                listRacePositions.Add(race);
+            }
+        }
+        reader.Close();
+
+        Debug.Log(listRacePositions.Count);
     }
 
     private void UpdateMaps()
     {
+        if(listRacePositions==null)
+        {
+            GetRaceFromFile();
+        }
         for (int i = 2; i < this.transform.childCount; i++)
         {
             Destroy(this.transform.GetChild(i).gameObject);
         }
         for (int i = 0; i < 4; i++)
         {
-            if (currentMapNumber + i < mapNumber)
+            if (currentMapNumber + i < listRacePositions.Count)
             {
-                GameObject map = Instantiate(Resources.Load("Map" + (currentMapNumber + i))) as GameObject;
+                GameObject map = Instantiate(Resources.Load("Map")) as GameObject;
                 //GameObject map = Instantiate(Resources.Load("Map1")) as GameObject;
                 map.transform.parent = this.transform;
                 map.layer = 10;
                 map.GetComponent<RectTransform>().localScale = new Vector3(0.3f, 0.3f, 0.3f);
                 map.GetComponent<RectTransform>().localPosition = new Vector3(i % 2 * 300 - 150, -((i / 2) * 120) + 60, 0);
+                map.GetComponent<MapInfo>().UpdateStartAndTarget(listRacePositions[currentMapNumber + i]);
 
                 Rect rect = map.GetComponent<RectTransform>().rect;
                 GameObject button = Instantiate(buttonPrefab);
@@ -72,7 +105,7 @@ public class LevelPanel : MonoBehaviour
             previousButton.SetActive(true);
         }
 
-        if (currentMapNumber + 4 < mapNumber)
+        if (currentMapNumber + 4 < listRacePositions.Count)
         {
             nextButton.SetActive(true);
         }
@@ -91,6 +124,7 @@ public class LevelPanel : MonoBehaviour
     public void LoadScene(int level)
     {
         StaticClass.CrossSceneInformation = level;
+        StaticClass.racePositions = listRacePositions[level];
         SceneManager.LoadScene(1);
         Debug.Log("Level " + level);
     }
@@ -104,7 +138,7 @@ public class LevelPanel : MonoBehaviour
 
     public void NextPage()
     {
-        if (currentMapNumber + 4 < mapNumber) currentMapNumber += 4;
+        if (currentMapNumber + 4 < listRacePositions.Count) currentMapNumber += 4;
         UpdateMaps();
     }
 
@@ -116,6 +150,6 @@ public class LevelPanel : MonoBehaviour
 
     public int GetNbLevel()
     {
-        return mapNumber;
+        return listRacePositions.Count;
     }
 }

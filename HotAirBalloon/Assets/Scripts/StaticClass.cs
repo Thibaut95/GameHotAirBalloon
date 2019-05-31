@@ -3,6 +3,7 @@ using System.Text;
 
 public static class StaticClass {
     public static int CrossSceneInformation { get; set; }
+    public static RacePositions racePositions { get; set; }
 
     public static byte[] GetHash(string inputString)
     {
