@@ -18,45 +18,62 @@ public class LevelPanel : MonoBehaviour
     private GameObject buttonPrefab;
     [SerializeField]
     private GameObject scoresPanel;
+    [SerializeField]
+    private GameObject constantsGameObject;
 
     private int currentMapNumber;
     private bool startGame;
     private List<RacePositions> listRacePositions;
+
+    private string races = @"
+        {
+            ""0"":
+            {
+                ""name"":""Lausanne - Fribourg"",
+                ""latitudeStart"":46.5285767,
+                ""longitudeStart"":6.5824554,
+                ""latitudeTarget"":46.803193,
+                ""longitudeTarget"":7.1422554
+            },
+            ""1"":
+            {
+                ""name"":""Berne - Saint-Gall"",
+                ""latitudeStart"":46.9547232,
+                ""longitudeStart"":7.3598507,
+                ""latitudeTarget"":47.4241176,
+                ""longitudeTarget"":9.3283507
+            },
+        }
+    ";
+
     // Start is called before the first frame update
     void Start()
     {
         currentMapNumber = 0;
-
-        
-        
     }
 
     private void GetRaceFromFile()
     {
         listRacePositions = new List<RacePositions>();
-        string path = "Assets/Resources/races.txt";
 
-        //Read the text from directly from the test.txt file
-        StreamReader reader = new StreamReader(path); 
-        string values=reader.ReadToEnd();
+        string values = races;
 
-        string[] valueSplit = values.Split('{','}');
+        string[] valueSplit = values.Split('{', '}');
         for (int i = 0; i < valueSplit.Length; i++)
         {
-            if(i%2==0 && i!=0 && i != valueSplit.Length-1)
+            if (i % 2 == 0 && i != 0 && i != valueSplit.Length - 1)
             {
-                RacePositions race = JsonUtility.FromJson<RacePositions>("{"+valueSplit[i]+"}");
+                RacePositions race = JsonUtility.FromJson<RacePositions>("{" + valueSplit[i] + "}");
                 listRacePositions.Add(race);
             }
         }
-        reader.Close();
 
         Debug.Log(listRacePositions.Count);
     }
 
     private void UpdateMaps()
     {
-        if(listRacePositions==null)
+        if (listRacePositions == null)
         {
             GetRaceFromFile();
         }

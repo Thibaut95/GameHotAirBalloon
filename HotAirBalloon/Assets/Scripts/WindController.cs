@@ -60,9 +60,9 @@ public class WindController : MonoBehaviour
 
         GameObject map = Instantiate(Resources.Load("Map"), canvas.transform) as GameObject;
         map.transform.position = mapLocation.transform.position;
-        // map.GetComponent<MapInfo>().UpdateStartAndTarget(StaticClass.racePositions);
+        map.GetComponent<MapInfo>().UpdateStartAndTarget(StaticClass.racePositions);
 
-        // miniBalloon = Instantiate(miniBalloonPrefab, map.transform);
+        miniBalloon = Instantiate(miniBalloonPrefab, map.transform);
 
         mapInfo = map.GetComponent<MapInfo>();
 
@@ -81,16 +81,15 @@ public class WindController : MonoBehaviour
         balloonPosition = new Vector2((start.localPosition.x + width / 2) / widthRatio, (start.localPosition.y + height / 2) / heightRatio);
         targetPosition = new Vector2((target.localPosition.x + width / 2) / widthRatio, (target.localPosition.y + height / 2) / heightRatio);
 
-        // balloonPosition = new Vector2(0,0);
-        //Debug.Log(startPosition);
+        
 
         updateBalloonOnMap();
     }
 
     private void updateBalloonOnMap()
     {
-        // Vector3 newPos = new Vector3(balloonPosition.x * widthRatio - width / 2, balloonPosition.y * heightRatio - height / 2, -0.1f);
-        // miniBalloon.transform.localPosition = newPos;
+        Vector3 newPos = new Vector3(balloonPosition.x * widthRatio - width / 2, balloonPosition.y * heightRatio - height / 2, -0.1f);
+        miniBalloon.transform.localPosition = newPos;
     }
 
     private int GetDistance(Vector2 pos1, Vector2 pos2)
@@ -168,9 +167,6 @@ public class WindController : MonoBehaviour
         content.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2 + 300, rectCell.rect.height * listWinds[0].Length);
         contentLabelTime.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2, rectCell.rect.height);
         contentLabelHeight.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width, rectCell.rect.height * listWinds[0].Length);
-
-
-        
 
         Vector3 offset = new Vector3(offsetX + 1100, -50, 0);
         for (int i = 0; i < listWinds.Count; i++)
