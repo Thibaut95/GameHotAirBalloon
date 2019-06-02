@@ -37,7 +37,6 @@ public class MapInfo : MonoBehaviour
 
         float latitudeDistance = 111.11f;
 
-
         float longitudeDistanceStart = latitudeDistance * (float)Math.Cos((Math.PI/180)*racePositions.latitudeStart);
         float longitudeDistanceTarget = latitudeDistance * (float)Math.Cos((Math.PI/180)*racePositions.latitudeTarget);
 

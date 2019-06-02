@@ -13,6 +13,8 @@ public class LandGenerator : MonoBehaviour
     [SerializeField]
     private int sizeTile;
     [SerializeField]
+    private int sizeBiome;
+    [SerializeField]
     private int width;
     [SerializeField]
     private GameObject frontDecor;
@@ -25,14 +27,16 @@ public class LandGenerator : MonoBehaviour
 
     private Vector3 positionNextTile;
     private int biome;
+    private int counterBiome;
     private System.Random random;
 
     // Start is called before the first frame update
     void Start()
     {
-        positionNextTile=new Vector3(mainCamera.transform.position.x - width / 2,mainCamera.transform.position.y+offsetGround,0);
+        positionNextTile = new Vector3(mainCamera.transform.position.x - width / 2, mainCamera.transform.position.y + offsetGround, 0);
         random = new System.Random();
         biome = Random.Range(0, biomes.Length);
+        counterBiome = 0;
 
         while (positionNextTile.x < mainCamera.transform.position.x + width / 2)
         {
@@ -46,6 +50,12 @@ public class LandGenerator : MonoBehaviour
         if (mainCamera.gameObject.transform.position.x + width / 2 > positionNextTile.x)
         {
             NewTile();
+            counterBiome++;
+            if (counterBiome > sizeBiome)
+            {
+                biome = Random.Range(0, biomes.Length);
+                counterBiome = 0;
+            }
         }
     }
 

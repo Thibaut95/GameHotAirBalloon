@@ -17,9 +17,6 @@ public class Biome
     [SerializeField]
     private double[] treesDistribution;
 
-    [SerializeField]
-    private GameObject[] buildings;
-
     public double[] getTreesDistribution()
     {
         return treesDistribution;
