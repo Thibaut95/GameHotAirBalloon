@@ -11,6 +11,7 @@ public class TableScore : MonoBehaviour
 
     public void SortBy(string columnName)
     {
+        Debug.Log(columnName);
         switch (columnName)
         {
             case "fuel":
@@ -38,6 +39,7 @@ public class TableScore : MonoBehaviour
                 );
                 break;
             case "score":
+            Debug.Log("sort score");
                 listScore.Sort(
                     delegate (Score s1, Score s2)
                     {
@@ -84,7 +86,7 @@ public class TableScore : MonoBehaviour
             line.transform.Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.00}", item.fuel);
             line.transform.Find("TextTime").GetComponent<Text>().text = string.Format("{0:0.00}", item.time);
             line.transform.Find("TextDistance").GetComponent<Text>().text = item.distance.ToString();
-            line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", item.global);
+            line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0}", item.global);
         }
     }
 }

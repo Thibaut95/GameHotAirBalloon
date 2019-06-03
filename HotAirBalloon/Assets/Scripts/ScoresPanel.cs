@@ -50,6 +50,7 @@ public class ScoresPanel : MonoBehaviour
                 this.transform.Find("GeneralScore").GetComponent<TableGeneral>().SetScores(bestScores);
                 break;
         }
+        state = "";
     }
 
     private void UpdateListBestScores(DataSnapshot snapshot)
@@ -133,7 +134,7 @@ public class ScoresPanel : MonoBehaviour
         }
         if (id != "")
         {
-            transform.Find("TextError").GetComponent<Text>().text = "";
+            transform.Find("OtherUserScore").Find("TextError").GetComponent<Text>().text = "";
             FirebaseDatabase.DefaultInstance.GetReference("usersscores/" + ("race" + race) + "/" + id).GetValueAsync().ContinueWith(task =>
             {
                 if (task.IsFaulted)
@@ -158,7 +159,7 @@ public class ScoresPanel : MonoBehaviour
         }
         else
         {
-            transform.Find("TextError").GetComponent<Text>().text = "Le nom d'utilisateur n'existe pas";
+            transform.Find("OtherUserScore").Find("TextError").GetComponent<Text>().text = "Le nom d'utilisateur n'existe pas";
             otherScores.Clear();
             state = "updateTableOtherScore";
         }
@@ -207,3 +208,4 @@ public class ScoresPanel : MonoBehaviour
         GetUsers();
     }
 }
+

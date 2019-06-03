@@ -22,16 +22,36 @@ public class TableGeneral : MonoBehaviour
         switch (columnName)
         {
             case "fuel":
-                listScore[index].Sort((t1, t2) =>t1.Item2.fuel.CompareTo(t2.Item2.fuel));
+                listScore[index].Sort(
+                    delegate (Tuple<string, Score> s1, Tuple<string, Score> s2)
+                    {
+                        return s1.Item2.fuel.CompareTo(s2.Item2.fuel)*-1;
+                    }
+                    );
                 break;
             case "time":
-                listScore[index].Sort((t1, t2) =>t1.Item2.time.CompareTo(t2.Item2.time));
+                listScore[index].Sort(
+                    delegate (Tuple<string, Score> s1, Tuple<string, Score> s2)
+                    {
+                        return s1.Item2.time.CompareTo(s2.Item2.time);
+                    }
+                    );
                 break;
             case "distance":
-                listScore[index].Sort((t1, t2) =>t1.Item2.distance.CompareTo(t2.Item2.distance));
+                listScore[index].Sort(
+                    delegate (Tuple<string, Score> s1, Tuple<string, Score> s2)
+                    {
+                        return s1.Item2.distance.CompareTo(s2.Item2.distance);
+                    }
+                    );
                 break;
             case "score":
-                listScore[index].Sort((t1, t2) =>t1.Item2.global.CompareTo(t2.Item2.global));
+                listScore[index].Sort(
+                    delegate (Tuple<string, Score> s1, Tuple<string, Score> s2)
+                    {
+                        return s1.Item2.global.CompareTo(s2.Item2.global)*-1;
+                    }
+                    );
                 break;
         }
         UpdateTable();
@@ -73,7 +93,7 @@ public class TableGeneral : MonoBehaviour
             line.transform.Find("TextFuel").GetComponent<Text>().text = string.Format("{0:0.00}", item.Item2.fuel);
             line.transform.Find("TextTime").GetComponent<Text>().text = string.Format("{0:0.00}", item.Item2.time);
             line.transform.Find("TextDistance").GetComponent<Text>().text = item.Item2.distance.ToString();
-            line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0.00}", item.Item2.global);
+            line.transform.Find("TextScore").GetComponent<Text>().text = string.Format("{0:0}", item.Item2.global);
         }
     }
 }
