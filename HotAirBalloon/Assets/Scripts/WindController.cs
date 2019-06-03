@@ -42,6 +42,9 @@ public class WindController : MonoBehaviour
     private float width;
     private float height;
 
+    private bool firsCall = true;
+    private float offsetX;
+
 
     // Start is called before the first frame update
     void Start()
@@ -81,7 +84,7 @@ public class WindController : MonoBehaviour
         balloonPosition = new Vector2((start.localPosition.x + width / 2) / widthRatio, (start.localPosition.y + height / 2) / heightRatio);
         targetPosition = new Vector2((target.localPosition.x + width / 2) / widthRatio, (target.localPosition.y + height / 2) / heightRatio);
 
-        
+
 
         updateBalloonOnMap();
     }
@@ -104,6 +107,11 @@ public class WindController : MonoBehaviour
 
         float strength = windManager.GetStrength(index);
         float direction = windManager.GetDirection(index);
+        if (windManager.CheckTime())
+        {
+            UpdateCanvasWind();
+        }
+
 
         Vector3 position = this.transform.position;
         if (position.y / constants.GetFactorSize() > balloonControler.Geth0())
@@ -141,7 +149,6 @@ public class WindController : MonoBehaviour
     private void UpdateCanvasWind()
     {
         List<Wind[]> listWinds = windManager.GetListWinds();
-        Debug.Log(listWinds.Count);
 
         GameObject content = canvasWind.transform.Find("Scroll View").Find("Viewport").Find("Content").gameObject;
         for (int i = 0; i < content.transform.childCount; i++)
@@ -150,23 +157,19 @@ public class WindController : MonoBehaviour
         }
 
         GameObject contentLabelTime = canvasWind.transform.Find("Scroll View Time").Find("Viewport").Find("Content").gameObject;
-        for (int i = 0; i < contentLabelTime.transform.childCount; i++)
-        {
-            Destroy(contentLabelTime.transform.GetChild(i).gameObject);
-        }
-
         GameObject contentLabelHeight = canvasWind.transform.Find("Scroll View Height").Find("Viewport").Find("Content").gameObject;
-        for (int i = 0; i < contentLabelHeight.transform.childCount; i++)
-        {
-            Destroy(contentLabelHeight.transform.GetChild(i).gameObject);
-        }
+
 
         RectTransform rect = content.GetComponent<RectTransform>();
         RectTransform rectCell = cellPrefabs.GetComponent<RectTransform>();
-        float offsetX = rect.sizeDelta.x / 2;
-        content.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2 + 300, rectCell.rect.height * listWinds[0].Length);
-        contentLabelTime.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2, rectCell.rect.height);
-        contentLabelHeight.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width, rectCell.rect.height * listWinds[0].Length);
+        if (firsCall)
+        {
+            offsetX = rect.sizeDelta.x / 2;
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2 + 300, rectCell.rect.height * listWinds[0].Length);
+            contentLabelTime.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width * listWinds.Count + offsetX * 2, rectCell.rect.height);
+            contentLabelHeight.GetComponent<RectTransform>().sizeDelta = new Vector2(rectCell.rect.width, rectCell.rect.height * listWinds[0].Length);
+        }
+
 
         Vector3 offset = new Vector3(offsetX + 1100, -50, 0);
         for (int i = 0; i < listWinds.Count; i++)
@@ -182,24 +185,32 @@ public class WindController : MonoBehaviour
                 cell.transform.Find("Text").GetComponent<Text>().text = string.Format("{0:0.0}", listWinds[i][j].strength);
                 cell.transform.Find("compass_needle").eulerAngles = new Vector3(0, 0, listWinds[i][j].direction - 90);
             }
-            GameObject labelPrefabs = Instantiate(textLabelPrefabs, contentLabelTime.transform);
-            Vector3 posLabel = labelPrefabs.transform.localPosition;
-            posLabel.x = i * rectCell.rect.width - offsetX - 1100;
-            posLabel.y = 0;
-            posLabel += offset;
-            labelPrefabs.transform.localPosition = posLabel;
-            labelPrefabs.transform.Find("Text").GetComponent<Text>().text = (i * windManager.GetDuration()).ToString();
+            if (firsCall)
+            {
+                GameObject labelPrefabs = Instantiate(textLabelPrefabs, contentLabelTime.transform);
+                Vector3 posLabel = labelPrefabs.transform.localPosition;
+                posLabel.x = i * rectCell.rect.width - offsetX - 1100;
+                posLabel.y = 0;
+                posLabel += offset;
+                labelPrefabs.transform.localPosition = posLabel;
+                labelPrefabs.transform.Find("Text").GetComponent<Text>().text = (i * windManager.GetDuration()).ToString();
+            }
+
         }
-        for (int j = 0; j < listWinds[0].Length; j++)
+        if (firsCall)
         {
-            GameObject labelPrefabs = Instantiate(textLabelPrefabs, contentLabelHeight.transform);
-            Vector3 posLabel = labelPrefabs.transform.localPosition;
-            posLabel.x = 100;
-            posLabel.y = -(listWinds[0].Length - 1 - j) * rectCell.rect.height;
-            posLabel += offset;
-            labelPrefabs.transform.localPosition = posLabel;
-            labelPrefabs.transform.Find("Text").GetComponent<Text>().text = (j * sizeArea).ToString();
+            for (int j = 0; j < listWinds[0].Length; j++)
+            {
+                GameObject labelPrefabs = Instantiate(textLabelPrefabs, contentLabelHeight.transform);
+                Vector3 posLabel = labelPrefabs.transform.localPosition;
+                posLabel.x = 100;
+                posLabel.y = -(listWinds[0].Length - 1 - j) * rectCell.rect.height;
+                posLabel += offset;
+                labelPrefabs.transform.localPosition = posLabel;
+                labelPrefabs.transform.Find("Text").GetComponent<Text>().text = (j * sizeArea).ToString();
+            }
         }
+        firsCall=false;
     }
 
     public int DistanceToTarget()

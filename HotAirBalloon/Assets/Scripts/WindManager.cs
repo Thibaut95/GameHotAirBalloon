@@ -61,19 +61,17 @@ public class WindManager
 
     public float GetDirection(int index)
     {
-        CheckTime();
         Wind wind = listWinds[0][index];
         return wind.direction;
     }
 
     public float GetStrength(int index)
     {
-        CheckTime();
         Wind wind = listWinds[0][index];
         return wind.strength;
     }
 
-    public void CheckTime()
+    public bool CheckTime()
     {
         if (timeToChange < Time.time)
         {
@@ -85,7 +83,9 @@ public class WindManager
             }
             listWinds.RemoveAt(0);
             timeToChange = Time.time + durationWind;
+            return true;
         }
+        return false;
     }
 
     public float GetMaxStrength()
