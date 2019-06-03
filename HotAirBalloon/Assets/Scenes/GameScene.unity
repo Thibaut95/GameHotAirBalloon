@@ -5856,7 +5856,7 @@ MonoBehaviour:
   sizeArea: 50
   sizeListTime: 30
   windManager:
-    durationWind: 10
+    durationWind: 60
     maxStrengthWind: 3
     maxDirectionWind: 90
   constantsGameObject: {fileID: 1287283668}
